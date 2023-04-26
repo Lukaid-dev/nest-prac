@@ -19,5 +19,5 @@ export class Board {
 
   @Column()
   @Field(() => String) // for GraphQL
-  content: string;
+  contents: string;
 }
