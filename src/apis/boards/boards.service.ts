@@ -1,5 +1,5 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { Board } from './entities/board.entities';
+import { Board } from './entities/board.entity';
 import { IBoardsServiceCreate } from './interfaces/boards-service.interface';
 
 // injection scope
