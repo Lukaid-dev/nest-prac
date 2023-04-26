@@ -41,4 +41,8 @@ export class BoardsService {
     // 2. 저장 결과 응답 주기
     return '게시물 등록에 성공하였습니다!!';
   }
+
+  getHello() {
+    return 'Hello World!';
+  }
 }
