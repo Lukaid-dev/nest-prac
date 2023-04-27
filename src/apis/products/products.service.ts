@@ -3,28 +3,41 @@ import { Repository } from "typeorm";
 import { Product } from "./entities/product.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ICreateProductInput, IProductServiceCheckSoldOut, IProductsServiceFindOne, IUpdateProductInput } from "./interfaces/products-service.interface";
+import { ProductSaleslocation } from "../productsSaleslocations/entities/productSaleslocation.entity";
+import { ProductsSaleslocationsService } from "../productsSaleslocations/productsSaleslocations.service";
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
+    private readonly procuctsSaleslocationsService: ProductsSaleslocationsService,
   ) {}
 
   async fetchAll(): Promise<Product[]> {
-    const result = await this.productsRepository.find();
+    const result = await this.productsRepository.find({ relations: ['productSaleslocation'] });
     return result;
   }
 
   async fetchOne({ productId }: IProductsServiceFindOne): Promise<Product> {
-    const result = await this.productsRepository.findOne({ where: { id: productId } });
+    const result = await this.productsRepository.findOne({ where: { id: productId }, relations: ['productSaleslocation'] });
     return result;
   }
 
   async create({ createProductInput }: ICreateProductInput): Promise<Product> {
+    // const result = await this.productsRepository.save({
+    //   ...createProductInput,
+    // });
+
+    const { productSaleslocation, ...product } = createProductInput;
+
+    const location = await this.procuctsSaleslocationsService.create({ productSaleslocation });
+
     const result = await this.productsRepository.save({
-      ...createProductInput,
+      ...product,
+      productSaleslocation: location,
     });
+
     return result;
   }
 
