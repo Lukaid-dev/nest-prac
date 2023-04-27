@@ -3,7 +3,7 @@ import ProductCategory from 'src/apis/productsCategories/entities/productCategor
 import { ProductSaleslocation } from 'src/apis/productsSaleslocations/entities/productSaleslocation.entity';
 import { ProductTag } from 'src/apis/productsTags/entities/productTag.entity';
 import { User } from 'src/apis/users/entities/user.entity';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -27,6 +27,15 @@ export class Product {
   @Column({default: false})
   @Field(() => Boolean)
   isSoldout: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 
   @JoinColumn() // 두 테이블 중 중심이 되는 테이블에 적어줌
   @OneToOne(() => ProductSaleslocation) // 얘는 두 테이블 모두 적어도 되는데 굳이 적어주지 않아도 됨

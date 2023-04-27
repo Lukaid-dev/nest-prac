@@ -42,12 +42,33 @@ export class ProductsService {
     });
     return result;
   }
+  
+  async delete({ productId }: IProductsServiceFindOne): Promise<boolean>{
+    // 1. 찐삭제
+    // const result =  await this.productsRepository.delete({ id: productId });
+    // return result.affected ? true : false;
+
+    // 2. 소프트삭제
+    // const result = await this.productsRepository.update({ id: productId }, { isDeleted: true });
+    // return result.affected ? true : false;
+
+    // 3. 소프트삭제 + 날짜까지 - deletedAt
+    // const result = await this.productsRepository.softDelete({ id: productId }, { deletedAt: new Date() });
+
+    // 4. typeorm의 softRemove - id로만 삭제, 여러가지 삭제 가능
+    // const product = await this.productsRepository.softRemove({ id: productId });
+
+    // 5. typeorm의 softDelete - 여러 컬럼으로 삭제, 한번에 하나만 가능
+    const result = await this.productsRepository.softDelete({ id: productId });
+    return result.affected ? true : false;
+
+    // 이렇게하면, typeorm에서 조회할 때, deletedAt이 null인 것만 조회됨, entity에 DeleteDateColumn() 데코레이터가 있어야함
+  }
 
   // 검증로직 분리
   checkSoldOut({ product }: IProductServiceCheckSoldOut): void {
     if (product.isSoldout) throw new UnprocessableEntityException('이미 품절된 상품입니다.');
     // if (product.isSoldout) throw new HttpException('이미 품절된 상품입니다.', HttpStatus.UNPROCESSABLE_ENTITY);
-
   }
 }
 
