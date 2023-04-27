@@ -15,12 +15,12 @@ export class ProductsService {
   ) {}
 
   async fetchAll(): Promise<Product[]> {
-    const result = await this.productsRepository.find({ relations: ['productSaleslocation'] });
+    const result = await this.productsRepository.find({ relations: ['productSaleslocation', 'productCategory'] });
     return result;
   }
 
   async fetchOne({ productId }: IProductsServiceFindOne): Promise<Product> {
-    const result = await this.productsRepository.findOne({ where: { id: productId }, relations: ['productSaleslocation'] });
+    const result = await this.productsRepository.findOne({ where: { id: productId }, relations: ['productSaleslocation', 'productCategory'] });
     return result;
   }
 
@@ -29,13 +29,16 @@ export class ProductsService {
     //   ...createProductInput,
     // });
 
-    const { productSaleslocation, ...product } = createProductInput;
+    const { productSaleslocation, productCategoryId, ...product } = createProductInput;
 
     const location = await this.procuctsSaleslocationsService.create({ productSaleslocation });
 
     const result = await this.productsRepository.save({
       ...product,
       productSaleslocation: location,
+      productCategory: {
+        id: productCategoryId,
+      }
     });
 
     return result;

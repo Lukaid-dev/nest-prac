@@ -3,12 +3,12 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 @ObjectType()
-export default class ProductCategory {
+export class ProductCategory {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   @Field(() => String)
   name: string;
 }
