@@ -54,6 +54,7 @@ type Product {
 }
 
 type Query {
+  fetchUser: String!
   fetchBoards: [Board!]!
   fetchProducts: [Product!]!
   fetchProduct(productId: String!): Product!
