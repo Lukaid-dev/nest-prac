@@ -6,9 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ProductsModule } from './apis/products/products.module';
 import { ProductsCategoriesModule } from './apis/productsCategories/productsCategories.module';
+import { UsersModule } from './apis/users/users.module';
 
 @Module({
   imports: [
+    UsersModule,
     BoardsModule,
     ProductsModule,
     ProductsCategoriesModule,
