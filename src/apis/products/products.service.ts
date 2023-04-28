@@ -1,10 +1,10 @@
-import { HttpException, HttpStatus, Injectable, UnprocessableEntityException } from "@nestjs/common";
+import { Injectable, UnprocessableEntityException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { Product } from "./entities/product.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ICreateProductInput, IProductServiceCheckSoldOut, IProductsServiceFindOne, IUpdateProductInput } from "./interfaces/products-service.interface";
-import { ProductSaleslocation } from "../productsSaleslocations/entities/productSaleslocation.entity";
 import { ProductsSaleslocationsService } from "../productsSaleslocations/productsSaleslocations.service";
+import { ProductsTagsService } from "../productsTags/productsTags.service";
 
 @Injectable()
 export class ProductsService {
@@ -12,6 +12,7 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
     private readonly procuctsSaleslocationsService: ProductsSaleslocationsService,
+    private readonly productsTagsService: ProductsTagsService,
   ) {}
 
   async fetchAll(): Promise<Product[]> {
@@ -29,16 +30,29 @@ export class ProductsService {
     //   ...createProductInput,
     // });
 
-    const { productSaleslocation, productCategoryId, ...product } = createProductInput;
+    const { productSaleslocation, productCategoryId, productTags,...product } = createProductInput;
 
     const location = await this.procuctsSaleslocationsService.create({ productSaleslocation });
+
+    const tagNames = productTags.map((el) => el.replace('#', ''));
+    const prevTags = await this.productsTagsService.findByNames({ tagNames });
+
+    const temp = []; 
+    tagNames.forEach((el) => {
+      const exists = prevTags.find((prevEl) => el === prevEl.name);
+      if (!exists) temp.push({ name: el });
+    });
+    const newTags =  await this.productsTagsService.bulkInsert({ names: temp });
+
+    const tags = [...prevTags, ...newTags.identifiers]
 
     const result = await this.productsRepository.save({
       ...product,
       productSaleslocation: location,
       productCategory: {
         id: productCategoryId,
-      }
+      },
+      productTags: tags,
     });
 
     return result;
@@ -48,13 +62,23 @@ export class ProductsService {
   async update({ productId, updateProductInput }: IProductsServiceFindOne & IUpdateProductInput): Promise<Product> {
     const product = await this.fetchOne({ productId });
 
-    // 검등은 서비스에서 함
+    // 검증은 서비스에서 함
     this.checkSoldOut({ product });
+
+    const { productSaleslocation, productCategoryId, productTags, ...updateProduct } = updateProductInput;
     
     const result = await this.productsRepository.save({
       id: productId,
       ...product, //  수정 후, 수정되지 않은 값까지 모두 객체로 돌려받고 싶을 떄
-      ...updateProductInput, // 객체의 키가 중복되면 뒤에 있는 값으로 덮어씌워짐
+      // ...updateProductInput, // 객체의 키가 중복되면 뒤에 있는 값으로 덮어씌워짐
+      ...updateProduct,
+      productSaleslocation: {
+        ...product.productSaleslocation,
+        ...productSaleslocation,
+      },
+      productCategory: {
+        id: productCategoryId,
+      },
     });
     return result;
   }
