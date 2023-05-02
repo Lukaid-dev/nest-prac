@@ -1,6 +1,8 @@
 import { Args, Context, Mutation, Resolver } from "@nestjs/graphql";
 import { AuthService } from "./auth.service";
 import { IContext } from "src/commons/interfaces/context";
+import { UseGuards } from "@nestjs/common";
+import { gqlAuthGuard } from "./guards/gql-auth.guard";
 
 @Resolver()
 export class AuthResolver {
@@ -15,5 +17,13 @@ export class AuthResolver {
     @Context() context: IContext,
   ): Promise<string> {
     return this.authService.login({ email, password, context });
+  }
+
+  @UseGuards(gqlAuthGuard('refresh'))
+  @Mutation(() => String)
+  restoreAccessToken(
+    @Context() context: IContext,
+  ): string {
+    return this.authService.restoreAccessToken({ user: context.req.user });
   }
 }

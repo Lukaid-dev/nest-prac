@@ -2,7 +2,7 @@ import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthAccessGuard } from '../auth/guards/gql-auth.guard';
+import { gqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { IContext } from 'src/commons/interfaces/context';
 
 
@@ -13,7 +13,7 @@ export class UsersResolver {
   ) {}
 
   // @UseGuards(AuthGuard('access')) // rest-api 에서의 인가 방식
-  @UseGuards(GqlAuthAccessGuard) // graphql 에서의 인가 방식
+  @UseGuards(gqlAuthGuard("access")) // graphql 에서의 인가 방식
   @Query(() => String)
   fetchUser(
     @Context() context: IContext 

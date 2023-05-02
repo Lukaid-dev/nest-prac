@@ -1,5 +1,5 @@
 import { User } from 'src/apis/users/entities/user.entity';
-import { IContext } from 'src/commons/interfaces/context';
+import { IAuthUser, IContext } from 'src/commons/interfaces/context';
 
 export interface IAuthServiceLogin {
   email: string;
@@ -8,7 +8,11 @@ export interface IAuthServiceLogin {
 }
 
 export interface IAuthServiceGetAccessToken {
-  user: User;
+  user: User | IAuthUser['user'];
+}
+
+export interface IAuthServiceRestoreAccessToken {
+  user: IAuthUser['user'];
 }
 
 export interface IAuthServiceSetRefreshToken {
