@@ -88,6 +88,7 @@ type Mutation {
   restoreAccessToken: String!
   createUser(email: String!, password: String!, name: String!, age: Int!): User!
   createBoard(createBoardInput: CreateBoardInput!): String!
+  uploadFile(files: [Upload!]!): [String!]!
   createPayment(amount: Float!): Payment!
   createPointTransaction(impUid: String!, amount: Int!): PointTransaction!
   createProduct(createProductInput: CreateProductInput!): Product!
@@ -101,6 +102,9 @@ input CreateBoardInput {
   title: String!
   contents: String!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 input CreateProductInput {
   name: String!
