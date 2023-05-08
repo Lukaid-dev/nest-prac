@@ -9,12 +9,14 @@ import { ProductsCategoriesModule } from './apis/productsCategories/productsCate
 import { UsersModule } from './apis/users/users.module';
 import { AuthModule } from './apis/auth/auth.module';
 import { PointsTransactionsModule } from './apis/pointsTransactions/pointsTransactions.module';
+import { PaymentsMoudle } from './apis/payments/payments.module';
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
     BoardsModule,
+    PaymentsMoudle,
     PointsTransactionsModule,
     ProductsModule,
     ProductsCategoriesModule,
